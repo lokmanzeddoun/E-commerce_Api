@@ -14,7 +14,7 @@ const subCategoryRoute = require("./routes/subCategoryRoute");
 const BrandRoute = require("./routes/brandRoute");
 const productRoute = require("./routes/productRoute");
 const userRoute = require("./routes/userRoute");
-
+const authRoute = require("./routes/authroute")
 // Set up configuration
 dotenv.config({ path: "config.env" });
 
@@ -39,6 +39,7 @@ app.use("/api/v1/subcategories", subCategoryRoute);
 app.use("/api/v1/brand", BrandRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/auth",authRoute)
 
 app.all("*", (req, res, next) => {
 	next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));

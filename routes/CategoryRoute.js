@@ -15,12 +15,15 @@ const {
 	deleteCategory,
 } = require("../services/CategoryService");
 
+const AuthService = require('../services/authService')
+
 const router = express.Router();
 router.use("/:categoryId/subcategories", subCategoryRoute);
 router
 	.route("/")
 	.get(getCategories)
 	.post(
+		AuthService.protect,
 		uploadCategoryImage,
 		resizeImage,
 		createCategoryValidator,

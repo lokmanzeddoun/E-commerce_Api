@@ -25,8 +25,6 @@ const setImageUrl = (doc) => {
 		doc.image = imageUrl
 	}
 }
-
-
 // Mongoose Middleware for assigning image the imageUrl
 
 // 1- getAll getOne updateOne
