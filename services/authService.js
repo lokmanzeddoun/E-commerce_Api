@@ -10,7 +10,7 @@ const createToken = (payload) =>
 	});
 
 // @desc Signup
-// @route GET api/v1/auth/signup
+// @route POST api/v1/auth/signup
 // @access Public
 exports.signUp = asyncHandler(async (req, res, next) => {
 	// 1-Create user
@@ -25,7 +25,9 @@ exports.signUp = asyncHandler(async (req, res, next) => {
 
 	res.status(201).json({ data: user, token });
 });
-
+// @desc Login
+// @route POST api/v1/auth/login
+// @access Public
 exports.login = asyncHandler(async (req, res, next) => {
 	// 1) check the email and password in body
 	// 2) check if the user are exist
@@ -90,3 +92,15 @@ exports.protect = asyncHandler(async (req, res, next) => {
 	req.user = user;
 	next();
 });
+
+exports.allowedTo = (...roles) =>  // when we access a data of function that is outer  of function we call it (Closure)
+	// 1) access roles ;
+	// 2) access user register ;
+	asyncHandler(async (req, res, next) => {
+		if (!roles.includes(req.user.role)) {
+			return next(
+				new ApiError("You are not allowed to access this route ", 403)
+			);
+		}
+		next();
+	});

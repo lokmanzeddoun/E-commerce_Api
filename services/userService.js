@@ -30,16 +30,16 @@ exports.getUsers = factory.getAll(User);
 
 // @desc    Get specific user by id
 // @route   GET /api/v1/users/:id
-// @access  Public
+// @access  Private/admin
 exports.getUser = factory.getOne(User);
 
 // @desc    Create user
 // @route   POST  /api/v1/users
-// @access  Private
+// @access  Private/admin
 exports.createUser = factory.createOne(User);
 // @desc    Update specific user
 // @route   PUT /api/v1/users/:id
-// @access  Private
+// @access  Private/admin
 exports.updateUser = asyncHandler(async (req, res, next) => {
 	const document = await User.findByIdAndUpdate(
 		req.params.id,
@@ -75,5 +75,5 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
 });
 // @desc    Delete specific user
 // @route   DELETE /api/v1/users/:id
-// @access  Private
+// @access  Private/admin
 exports.deleteUser = factory.deleteOne(User);

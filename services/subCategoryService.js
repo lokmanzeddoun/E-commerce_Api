@@ -27,14 +27,14 @@ exports.getAllSubCategories = factory.getAll(subCategoryModel);
 
 // @desc    get specific subcategory
 // @route   GET /api/v1/subcategories/:id
-// @access  Private
+// @access  Private/Admin-Manager
 exports.getSubCategory = factory.getOne(subCategoryModel);
 // @desc    update specific subcategory
 // @route   PUT /api/v1/subcategories/:id
-// @access  Private
+// @access  Private/Admin-Manager
 exports.updateSubCategory = factory.updateOne(subCategoryModel);
 
 // @desc    Delete specific subcategory
 // @route   DELETE /api/v1/subcategories/:id
-// @access  Private
+// @access  Private/admin
 exports.deleteSubCategory = factory.deleteOne(subCategoryModel);
