@@ -1,8 +1,12 @@
+const crypto = require("crypto");
+
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/ApiError");
 const User = require("../models/userModel");
+
+const sendEmail = require("../utils/sendEmail");
 
 const createToken = (payload) =>
 	jwt.sign({ userId: payload }, process.env.JWT_SECRET_KEY, {
@@ -93,7 +97,11 @@ exports.protect = asyncHandler(async (req, res, next) => {
 	next();
 });
 
-exports.allowedTo = (...roles) =>  // when we access a data of function that is outer  of function we call it (Closure)
+// @desc "authorization"
+
+exports.allowedTo = (
+	...roles // when we access a data of function that is outer  of function we call it (Closure)
+) =>
 	// 1) access roles ;
 	// 2) access user register ;
 	asyncHandler(async (req, res, next) => {
@@ -104,3 +112,137 @@ exports.allowedTo = (...roles) =>  // when we access a data of function that is 
 		}
 		next();
 	});
+
+// @desc forget password
+
+// @desc Forget password
+// @route POST api/v1/auth/forgetPassword
+// @access Public
+exports.forgetPassword = asyncHandler(async (req, res, next) => {
+	// 1) Get user by email address;
+
+	const user = await User.findOne({ email: req.body.email });
+	if (!user) {
+		return next(
+			new ApiError(`There is no user with this email ${req.body.email}`, 404)
+		);
+	}
+	// 2) If user exists , generate 6 digits and save it in db
+	const resetCode = Math.floor(Math.random() * 900000 + 100000).toString();
+
+	const hashedResetCode = crypto
+		.createHash("sha256")
+		.update(resetCode)
+		.digest("hex");
+
+	// save into db
+	user.resetPasswordCode = hashedResetCode;
+	user.resetPasswordExpire = Date.now() + 20 * 60 * 1000; // 20 minutes
+	user.passwordResetVerified = false;
+	await user.save();
+
+	// 3) send reset code via email
+	const message = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+
+    <div style="max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #333;">Password Reset</h2>
+        <p style="color: #555;">Hello ${user.name},</p>
+
+        <p style="color: #555;">You have requested to reset your password. Please use the following reset code:</p>
+
+        <p style="color: #555;">
+            <span style="display: inline-block; padding: 8px 12px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;">${resetCode}</span>
+        </p>
+
+        <p style="color: #555;">If you did not request a password reset, please ignore this email.</p>
+
+        <p style="color: #555;">Best regards,<br>Your Website Team</p>
+    </div>
+
+</div>`;
+
+	try {
+		await sendEmail({
+			email: user.email,
+			subject: "Your reset code (Valid for 20 minutes)",
+			message,
+		});
+	} catch (err) {
+		console.log(resetCode);
+		user.resetPasswordCode = undefined;
+		user.resetPasswordExpire = undefined;
+		user.passwordResetVerified = undefined;
+
+		// await user.save();
+		return next(
+			new ApiError(
+				"There is an error in the Sending Email . Please try again",
+				500
+			)
+		);
+	}
+	res.status(200).json({
+		success: true,
+		message: "Reset code sent to your email",
+	});
+});
+
+// @desc verify Reset code
+// @route POST api/v1/auth/verifyResetCode
+// @access Public
+exports.verifyResetCode = asyncHandler(async (req, res, next) => {
+	// 1) Get the user based on the reset code
+	const hashedResetCode = crypto
+		.createHash("sha256")
+		.update(req.body.resetCode)
+		.digest("hex");
+
+	const user = await User.findOne({
+		resetPasswordCode: hashedResetCode,
+		resetPasswordExpire: { $gt: Date.now() },
+	});
+
+	if (!user) {
+		return next(new ApiError("Reset Code invalid or expired ", 404));
+	}
+
+	user.passwordResetVerified = true;
+
+	await user.save();
+	res.status(200).json({ status: "success" });
+});
+
+
+// @desc Set new Password
+// @route POST api/v1/auth/setPassword
+// @access Public
+exports.setNewPassword = asyncHandler(async (req, res, next) => {
+	// 1) Get the user based on the email 
+
+	const user = await User.findOne({ email: req.body.email });
+
+	if (!user) {
+		return next(
+      new ApiError(`There is no user with this email ${req.body.email}`, 404)
+    );
+	}
+	// 2) check if the reset code is verified 
+	if (!user.passwordResetVerified) {
+		return next(new ApiError("Please verify your reset code ", 404));
+	}
+
+
+	user.password = req.body.newPassword;
+	user.resetPasswordCode = undefined;
+	user.resetPasswordExpire = undefined;
+	user.passwordResetVerified = undefined;
+	await user.save();
+
+	// 3) if everything is ok generate token 
+	const token = createToken(user._id);
+	res.status(200).json({
+    success: true,
+    token,
+  });
+
+});
