@@ -1,17 +1,14 @@
 const crypto = require("crypto");
 
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/ApiError");
 const User = require("../models/userModel");
+const jwt = require("jsonwebtoken");
+
+const createToken = require("../utils/createToken");
 
 const sendEmail = require("../utils/sendEmail");
-
-const createToken = (payload) =>
-	jwt.sign({ userId: payload }, process.env.JWT_SECRET_KEY, {
-		expiresIn: process.env.ExpiresIn,
-	});
 
 // @desc Signup
 // @route POST api/v1/auth/signup
@@ -212,25 +209,23 @@ exports.verifyResetCode = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ status: "success" });
 });
 
-
 // @desc Set new Password
 // @route POST api/v1/auth/setPassword
 // @access Public
 exports.setNewPassword = asyncHandler(async (req, res, next) => {
-	// 1) Get the user based on the email 
+	// 1) Get the user based on the email
 
 	const user = await User.findOne({ email: req.body.email });
 
 	if (!user) {
 		return next(
-      new ApiError(`There is no user with this email ${req.body.email}`, 404)
-    );
+			new ApiError(`There is no user with this email ${req.body.email}`, 404)
+		);
 	}
-	// 2) check if the reset code is verified 
+	// 2) check if the reset code is verified
 	if (!user.passwordResetVerified) {
 		return next(new ApiError("Please verify your reset code ", 404));
 	}
-
 
 	user.password = req.body.newPassword;
 	user.resetPasswordCode = undefined;
@@ -238,11 +233,10 @@ exports.setNewPassword = asyncHandler(async (req, res, next) => {
 	user.passwordResetVerified = undefined;
 	await user.save();
 
-	// 3) if everything is ok generate token 
+	// 3) if everything is ok generate token
 	const token = createToken(user._id);
 	res.status(200).json({
-    success: true,
-    token,
-  });
-
+		success: true,
+		token,
+	});
 });

@@ -81,6 +81,7 @@ exports.updateUserValidator = [
 		.isMobilePhone(["ar-DZ", "ar-MA", "ar-EG"])
 		.withMessage("Invalid Number accept Algeria , Egypt and Morocco Number"),
 	check("profileImage").optional(),
+	check("role").optional(),
 	validatorMiddleware,
 ];
 
@@ -110,5 +111,60 @@ exports.changePasswordValidator = [
 			}
 			return true;
 		}),
+	validatorMiddleware,
+];
+
+
+exports.changeMyPasswordValidator = [
+	check("currentPassword").notEmpty().withMessage("must be a current password"),
+	check("confirmPassword").notEmpty().withMessage("Invalid confirm password"),
+	check("password")
+		.notEmpty()
+		.withMessage("Invalid Password")
+		.custom(async (val, { req }) => {
+			// 1-verification of the current password
+			const user = await userModel.findByIdAndUpdate(req.user._id);
+			if (!user) {
+				throw new Error("There's is'n a user with this id");
+			}
+			const isCorrectPassword = await bcrypt.compare(
+				req.body.currentPassword,
+				user.password
+			);
+			if (!isCorrectPassword) {
+				throw new Error("The current password didn't match the old password");
+			}
+			// 2-verification of the confirm password
+			if (val !== req.body.confirmPassword) {
+				throw new Error("The confirm password doesn't match the password ");
+			}
+			return true;
+		}),
+	validatorMiddleware,
+];
+
+
+
+exports.updateMyDataValidator = [
+	body("name").custom((val, { req }) => {
+		req.body.slug = slugify(val);
+		return true;
+	}),
+	check("email")
+		.notEmpty()
+		.withMessage("Email Required")
+		.isEmail()
+		.withMessage("Invalid Email")
+		.custom((val) =>
+			userModel.findOne({ email: val }).then((user) => {
+				if (user) {
+					return Promise.reject(new Error(`Email Exist in the DataBase`));
+				}
+			})
+		),
+	check("phone")
+		.optional()
+		.isMobilePhone(["ar-DZ", "ar-MA", "ar-EG"])
+		.withMessage("Invalid Number accept Algeria , Egypt and Morocco Number"),
 	validatorMiddleware,
 ];
