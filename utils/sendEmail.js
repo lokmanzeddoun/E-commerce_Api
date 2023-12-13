@@ -21,7 +21,7 @@ const sendEmail = async (options) => {
 		from: `E-COMMERCE APP < ${process.env.EMAIL_USER} >`,
 		to: options.email,
 		subject: options.subject,
-		text: options.message,
+		html: options.message,
 	};
 	// 3) send email
 	await transporter.sendMail(emailOptions);
