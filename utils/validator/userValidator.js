@@ -146,13 +146,13 @@ exports.changeMyPasswordValidator = [
 
 
 exports.updateMyDataValidator = [
+	// check("id").isMongoId().withMessage("Invalid User Id Format"),
 	body("name").custom((val, { req }) => {
 		req.body.slug = slugify(val);
 		return true;
 	}),
 	check("email")
-		.notEmpty()
-		.withMessage("Email Required")
+		.optional()
 		.isEmail()
 		.withMessage("Invalid Email")
 		.custom((val) =>

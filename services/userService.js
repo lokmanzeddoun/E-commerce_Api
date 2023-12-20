@@ -55,7 +55,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 		{ new: true }
 	);
 	if (!document) {
-		return new ApiError(`There isn't document for this ${req.params.id}`, 404);
+		return next(new ApiError(`There isn't document for this ${req.params.id}`), 404);
 	}
 	res.status(200).json({ data: document });
 });

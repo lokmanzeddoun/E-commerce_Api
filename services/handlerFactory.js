@@ -61,8 +61,10 @@ exports.getOne = (Model, populateOpts) =>
 exports.getAll = (Model, modelName = "") =>
 	asyncHandler(async (req, res) => {
 		let filter = {};
-		if (req.filterObj) {
-			filter = req.filterObj;
+		if (req.filterObject) {
+			
+			filter = req.filterObject;
+			
 		}
 
 		const count = await Model.countDocuments();
