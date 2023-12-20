@@ -25,21 +25,21 @@ const { uploadSingleImage } = require("../middlewares/uploadImageMiddlewares");
 // };
 // const upload = multer({ storage: multerStorage, fileFilter: filterImage });
 
-
 // upload single image
 exports.uploadCategoryImage = uploadSingleImage("image");
-
 
 // Processing the image
 exports.resizeImage = asyncHandler(async (req, res, next) => {
 	const filename = `category-${uuidv4()}-${Date.now()}.jpeg`;
-	await sharp(req.file.buffer)
-		.resize(600, 600)
-		.toFormat("jpeg")
-		.jpeg({ quality: 90 })
-		.toFile(`uploads/categories/${filename}`);
-	// save image as name on database
-	req.body.image = filename;
+	if (req.file) {
+		await sharp(req.file.buffer)
+			.resize(600, 600)
+			.toFormat("jpeg")
+			.jpeg({ quality: 90 })
+			.toFile(`uploads/categories/${filename}`);
+		// save image as name on database
+		req.body.image = filename;
+	}
 	next();
 });
 // @desc    Get list of categories

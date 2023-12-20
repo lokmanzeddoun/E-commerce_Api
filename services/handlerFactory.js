@@ -10,7 +10,8 @@ exports.deleteOne = (Model) =>
 				{
 					_id: id,
 				},
-				{ active: false }, {new: true}
+				{ active: false },
+				{ new: true }
 			);
 			res.status(200).json({ data: document });
 			return;
@@ -41,10 +42,16 @@ exports.createOne = (Model) =>
 		res.status(201).json({ data: document });
 	});
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, populateOpts) =>
 	asyncHandler(async (req, res, next) => {
+		// 1) Build the query
 		const { id } = req.params;
-		const document = await Model.findById(id);
+		let query =  Model.findById(id);
+		if (populateOpts) {
+			query = query.populate(populateOpts);
+		}
+		// 2) Execute the query
+		const document = await query;
 		if (!document) {
 			next(new ApiError(`No Category Found For This Id ${id}`, 404));
 		}
@@ -54,8 +61,10 @@ exports.getOne = (Model) =>
 exports.getAll = (Model, modelName = "") =>
 	asyncHandler(async (req, res) => {
 		let filter = {};
-		if (req.filterObj) {
-			filter = req.filterObj;
+		if (req.filterObject) {
+			
+			filter = req.filterObject;
+			
 		}
 
 		const count = await Model.countDocuments();
