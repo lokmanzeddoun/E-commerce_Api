@@ -1,7 +1,16 @@
-
 const Review = require("../models/reviewModel");
 const factory = require("./handlerFactory");
 
+// nested route
+// GET /products/:productId/reviews
+exports.createFilterObject = (req, res, next) => {
+	let filterObject = {};
+	if (req.params.productId) {
+		filterObject = { product: req.params.productId };
+	}
+	req.filterObject = filterObject;
+	next();
+};
 
 
 exports.getReviews = factory.getAll(Review);
@@ -10,6 +19,13 @@ exports.getReviews = factory.getAll(Review);
 // @route   GET /api/v1/Reviews/:id
 // @access  Public
 exports.getReview = factory.getOne(Review);
+
+
+exports.setProductIdAndUserIdToBody = (req, res, next) => {
+  if (!req.body.product) req.body.product = req.params.productId;
+  if (!req.body.user) req.body.user = req.user._id;
+  next();
+}
 
 // @desc    Create Review
 // @route   POST  /api/v1/Reviews

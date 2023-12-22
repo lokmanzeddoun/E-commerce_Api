@@ -8,7 +8,7 @@ const {
 	deleteProduct,
 	updateProduct,
 } = require("../services/productService");
-
+const reviewRoute = require("./reviewRoute");
 const {
 	getProductValidator,
 	createProductValidator,
@@ -19,6 +19,10 @@ const {
 const AuthService = require("../services/authService");
 
 const router = express.Router();
+
+// Nested route
+// GET /api/v1/products/:productId/reviews
+router.use("/:productId/reviews", reviewRoute);
 
 router
 	.route("/")

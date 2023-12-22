@@ -46,7 +46,7 @@ exports.deleteReviewValidator = [
 							new Error(`There is no review with this Id : ${val}`)
 						);
 					}
-					if (review.user.toString() !== req.user._id.toString()) {
+					if (review.user._id.toString() !== req.user._id.toString()) {
 						return Promise.reject(new Error(`You can't perform this action`));
 					}
 				})
