@@ -17,6 +17,7 @@ exports.uploadProductImage = uploadMixImage([
 exports.resizeImage = asyncHandler(async (req, res, next) => {
 	// 1-image processing for imageCover
 	if (req.files.imageCover) {
+		console.log(req.files.imageCover);
 		const filename = `product-${uuidv4()}-${Date.now()}-Cover.jpeg`;
 		await sharp(req.files.imageCover[0].buffer)
 			.resize(2000, 1333)
@@ -63,7 +64,7 @@ exports.getProducts = factory.getAll(Product, "Products");
 // @desc    Get specific Product by id
 // @route   GET /api/v1/Products/:id
 // @access  Public
-exports.getProduct = factory.getOne(Product,"reviews");
+exports.getProduct = factory.getOne(Product, "reviews");
 
 // @desc    Create Product
 // @route   POST  /api/v1/Products

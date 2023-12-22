@@ -16,10 +16,14 @@ exports.deleteOne = (Model) =>
 			res.status(200).json({ data: document });
 			return;
 		}
-		const document = await Model.findByIdAndDelete(id);
+		const document = await Model.findById(id);
 		if (!document) {
 			return next(new ApiError(`No document for this id ${id}`, 404));
 		}
+		// trigger the "remove" event when delete document
+		await document.deleteOne();
+		// Check if the document is not null before calling remove
+		document.remove();
 		res.status(204).send();
 	});
 
@@ -33,6 +37,8 @@ exports.updateOne = (Model) =>
 				new ApiError(`No Document Found For This Id ${req.params.id}`)
 			);
 		}
+		// trigger the "save" event to update document
+		document.save();
 		res.status(200).json({ data: document });
 	});
 
@@ -46,7 +52,7 @@ exports.getOne = (Model, populateOpts) =>
 	asyncHandler(async (req, res, next) => {
 		// 1) Build the query
 		const { id } = req.params;
-		let query =  Model.findById(id);
+		let query = Model.findById(id);
 		if (populateOpts) {
 			query = query.populate(populateOpts);
 		}
@@ -62,9 +68,7 @@ exports.getAll = (Model, modelName = "") =>
 	asyncHandler(async (req, res) => {
 		let filter = {};
 		if (req.filterObject) {
-			
 			filter = req.filterObject;
-			
 		}
 
 		const count = await Model.countDocuments();

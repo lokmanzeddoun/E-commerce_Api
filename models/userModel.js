@@ -34,6 +34,13 @@ const userSchema = new mongoose.Schema(
 			enum: ["user", "manager", "admin"],
 			default: "user",
 		},
+		// child reference : (one to many)
+		wishlist: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: "Product",
+			},
+		],
 		active: {
 			type: Boolean,
 			default: true,
