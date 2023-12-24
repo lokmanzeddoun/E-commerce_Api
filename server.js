@@ -8,15 +8,8 @@ const ApiError = require("./utils/ApiError");
 const globalError = require("./middlewares/errorMiddleware");
 const dbConnection = require("./config/database");
 
-// Route
-const categoryRoute = require("./routes/CategoryRoute");
-const subCategoryRoute = require("./routes/subCategoryRoute");
-const BrandRoute = require("./routes/brandRoute");
-const productRoute = require("./routes/productRoute");
-const userRoute = require("./routes/userRoute");
-const authRoute = require("./routes/authroute");
-const reviewRoute = require("./routes/reviewRoute");
-const wishlistRoute = require("./routes/wishlistRoute");
+// Routes
+const mountRoutes = require("./routes");
 // Set up configuration
 dotenv.config({ path: "config.env" });
 
@@ -36,14 +29,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Mount Routes
-app.use("/api/v1/categories", categoryRoute);
-app.use("/api/v1/subcategories", subCategoryRoute);
-app.use("/api/v1/brand", BrandRoute);
-app.use("/api/v1/product", productRoute);
-app.use("/api/v1/user", userRoute);
-app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/review", reviewRoute);
-app.use("/api/v1/wishlist", wishlistRoute);
+mountRoutes(app);
 
 app.all("*", (req, res, next) => {
 	next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));

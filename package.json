@@ -2,10 +2,10 @@
 	"name": "e-commerce",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "server.js",
 	"scripts": {
-		"start:dev": "nodemon index.js",
-		"start:prod": "NODE_ENV=production node index.js",
+		"start:dev": "nodemon server.js",
+		"start:prod": "NODE_ENV=production node server.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],
