@@ -7,6 +7,8 @@ const morgan = require("morgan");
 const ApiError = require("./utils/ApiError");
 const globalError = require("./middlewares/errorMiddleware");
 const dbConnection = require("./config/database");
+const cors = require("cors");
+const compression = require("compression");
 
 // Routes
 const mountRoutes = require("./routes");
@@ -20,6 +22,11 @@ dbConnection();
 const app = express();
 
 // Middlewares
+// Enable different domain to access your application
+app.use(cors());
+app.options("*", cors());
+// compress all response
+app.use(compression());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "uploads")));
 
