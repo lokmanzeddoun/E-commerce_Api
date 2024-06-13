@@ -79,7 +79,6 @@ exports.getAll = (Model, modelName = "") =>
 			.sort()
 			.search(modelName)
 			.limitFields();
-
 		const { mongooseQuery, paginationResult } = docApi;
 		const document = await mongooseQuery;
 

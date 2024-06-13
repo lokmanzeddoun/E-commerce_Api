@@ -102,6 +102,7 @@ exports.allowedTo = (
 	// 1) access roles ;
 	// 2) access user register ;
 	asyncHandler(async (req, res, next) => {
+		console.log(roles);
 		if (!roles.includes(req.user.role)) {
 			return next(
 				new ApiError("You are not allowed to access this route ", 403)
@@ -170,7 +171,7 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
 		user.resetPasswordExpire = undefined;
 		user.passwordResetVerified = undefined;
 
-		// await user.save();
+		await user.save();
 		return next(
 			new ApiError(
 				"There is an error in the Sending Email . Please try again",
