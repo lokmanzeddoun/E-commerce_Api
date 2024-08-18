@@ -69,7 +69,7 @@ const productSchema = new mongoose.Schema(
 	},
 	{
 		timestamps: true,
-		// to enable virtual populate 
+		// to enable virtual populate
 		toJSON: { virtuals: true },
 		toObject: { virtuals: true },
 	}
@@ -81,20 +81,20 @@ productSchema.pre(/^find/, function (next) {
 	});
 	next();
 });
-const setImageUrl = (doc) => {
-	if (doc.imageCover) {
-		const imageUrl = `${process.env.BASE_URL}/products/cover-image/${doc.imageCover}`;
-		doc.imageCover = imageUrl;
-	}
-	if (doc.image) {
-		const imageList = [];
-		doc.image.forEach((element) => {
-			const imageUrl = `${process.env.BASE_URL}/products/images/${element}`;
-			imageList.push(imageUrl);
-		});
-		doc.image = imageList;
-	}
-};
+// const setImageUrl = (doc) => {
+// 	if (doc.imageCover) {
+// 		const imageUrl = `${process.env.BASE_URL}/products/cover-image/${doc.imageCover}`;
+// 		doc.imageCover = imageUrl;
+// 	}
+// 	if (doc.image) {
+// 		const imageList = [];
+// 		doc.image.forEach((element) => {
+// 			const imageUrl = `${process.env.BASE_URL}/products/images/${element}`;
+// 			imageList.push(imageUrl);
+// 		});
+// 		doc.image = imageList;
+// 	}
+// };
 
 productSchema.virtual("reviews", {
 	ref: "Review",
@@ -102,10 +102,10 @@ productSchema.virtual("reviews", {
 	localField: "_id",
 });
 
-productSchema.post("init", (doc) => {
-	setImageUrl(doc);
-});
-productSchema.post("save", (doc) => {
-	setImageUrl(doc);
-});
+// productSchema.post("init", (doc) => {
+// 	setImageUrl(doc);
+// });
+// productSchema.post("save", (doc) => {
+// 	setImageUrl(doc);
+// });
 module.exports = mongoose.model("Product", productSchema);

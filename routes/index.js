@@ -14,8 +14,8 @@ const orderRoute = require("./orderRoute")
 const mountRoutes = (app) => {
 	app.use("/api/v1/categories", categoryRoute);
 	app.use("/api/v1/subcategories", subCategoryRoute);
-	app.use("/api/v1/brand", BrandRoute);
-	app.use("/api/v1/product", productRoute);
+	app.use("/api/v1/brands", BrandRoute);
+	app.use("/api/v1/products", productRoute);
 	app.use("/api/v1/user", userRoute);
 	app.use("/api/v1/auth", authRoute);
 	app.use("/api/v1/review", reviewRoute);

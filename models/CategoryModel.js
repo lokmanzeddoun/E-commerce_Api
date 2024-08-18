@@ -18,22 +18,22 @@ const categorySchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
-// The function that change the image field from text to url
-const setImageUrl = (doc) => {
-	if (doc.image) {
-		const imageUrl = `${process.env.BASE_URL}/categories/${doc.image}`
-		doc.image = imageUrl
-	}
-}
-// Mongoose Middleware for assigning image the imageUrl
+// // The function that change the image field from text to url
+// const setImageUrl = (doc) => {
+// 	if (doc.image) {
+// 		const imageUrl = `${process.env.BASE_URL}/categories/${doc.image}`
+// 		doc.image = imageUrl
+// 	}
+// }
+// // Mongoose Middleware for assigning image the imageUrl
 
-// 1- getAll getOne updateOne
-categorySchema.post('init', (doc) => {
-	setImageUrl(doc)
-})
-categorySchema.post('save', (doc) => {
-	setImageUrl(doc)
-})
+// // 1- getAll getOne updateOne
+// categorySchema.post('init', (doc) => {
+// 	setImageUrl(doc)
+// })
+// categorySchema.post('save', (doc) => {
+// 	setImageUrl(doc)
+// })
 
 // 2- Create model
 

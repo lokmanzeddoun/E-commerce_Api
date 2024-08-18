@@ -18,21 +18,21 @@ const brandSchema = mongoose.Schema(
 	{ timestamps: true }
 );
 
-const setImageUrl = (doc) => {
-	if (doc.image) {
-		const imageUrl = `${process.env.BASE_URL}/brands/${doc.image}`;
-		doc.image = imageUrl;
-	}
-};
+// const setImageUrl = (doc) => {
+// 	if (doc.image) {
+// 		const imageUrl = `${process.env.BASE_URL}/brands/${doc.image}`;
+// 		doc.image = imageUrl;
+// 	}
+// };
 
 // Mongoose Middleware for assigning image the imageUrl
 
 // 1- getAll getOne updateOne
-brandSchema.post("init", (doc) => {
-	setImageUrl(doc);
-});
-brandSchema.post("save", (doc) => {
-	setImageUrl(doc);
-});
+// brandSchema.post("init", (doc) => {
+// 	setImageUrl(doc);
+// });
+// brandSchema.post("save", (doc) => {
+// 	setImageUrl(doc);
+// });
 
 module.exports = mongoose.model("Brand", brandSchema);
